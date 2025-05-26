@@ -1,0 +1,27 @@
+.memo-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.memo-card:hover {
+  background-color: #f1f3f5;
+  box-shadow: 0 0 0 2px #0d6efd33;
+}
+.memo-actions {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.action-icon {
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.action-icon:hover {
+  color: #0d6efd;
+}
