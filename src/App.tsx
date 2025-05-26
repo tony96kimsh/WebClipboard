@@ -9,6 +9,7 @@ import type { Memo } from './data/Memo';
 import type { Folder } from './data/Folder';
 
 function App() {
+  // 스토리지에 값 없을 경우 샘플 데이터 출력
   const [folders, setFolders] = useState<Folder[]>(() => {
     const stored = localStorage.getItem('folders');
     return stored ? JSON.parse(stored) : sampleFolders;
@@ -21,6 +22,7 @@ function App() {
     return stored ? JSON.parse(stored) : sampleMemos;
   });
 
+  // 값 변경될 때마다, 로컬스토리지 갱신
   useEffect(() => {
     localStorage.setItem('folders', JSON.stringify(folders));
   }, [folders]);

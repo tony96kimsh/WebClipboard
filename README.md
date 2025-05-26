@@ -1,21 +1,23 @@
 # 🖇 웹 클립보드
 > 메모를 쉽게 복사 및 저장 관리할 수 있는 웹 클립보드입니다.
 
-A | B| C
+홈화면 | 로그인 화면| 메모 추가
 --|--|--|
-![구현 사진](url) | ![구현 사진](url) | ![구현 사진](url) 
+![alt text](./public/image2.png) | | ![alt text](./public/image.png)
 
 <br>
 
 Links
-🔗 [🌐 사이트 바로가기](https://tony96kimsh.github.io/WebClipboard/)  
-
+[🌐 사이트 바로가기](https://tony96kimsh.github.io/WebClipboard/)  
+[📘 작업 로그(노션)](https://stump-smartphone-024.notion.site/React-Oauth-Cloud-DB-1e7f398452c380489bf0dbc33195c385?pvs=4)
 
 ## 프로젝트 개요
 
 ### 제작 배경
 
+
 ### 기술 스택
+TypeScript, React
 
 ### 주요 기능
 1. 
@@ -27,20 +29,26 @@ Links
 ### 레이아웃 구성
 
 ### 폴더 구조
-
+```
+/src
+├── App.css
+├── App.tsx
+├── assets
+│   └── react.svg
+├── components
+│   ├── FolderMenu.css
+│   ├── FolderMenu.tsx
+│   ├── InsertMemo.tsx
+│   ├── MemoList.css
+│   ├── MemoList.tsx
+│   └── MemoModal.tsx
+├── data
+│   ├── Folder.ts
+│   ├── Memo.ts
+│   └── Sample.ts
+├── index.css
+├── main.tsx
+└── vite-env.d.ts
+```
 ### 코드 구조
 
-
-
-
-## 추후 작업 및 이슈
-
-### TODO
-
-### Issues
-
-
-
-
-## 참고자료
-- 
