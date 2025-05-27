@@ -3,11 +3,12 @@ import './App.css';
 import FolderMenu from './components/FolderMenu';
 import InsertMemo from './components/InsertMemo';
 import MemoList from './components/MemoList';
-import { Container } from 'react-bootstrap';
+import { Container  } from 'react-bootstrap';
 import { sampleFolders, sampleMemos } from './data/Sample';
 import type { Memo } from './data/Memo';
 import type { Folder } from './data/Folder';
 import Header from './layout/Header';
+import LoginModal from './login/LoginModal';
 
 function App() {
   // 스토리지에 값 없을 경우 샘플 데이터 출력
@@ -22,6 +23,18 @@ function App() {
     const stored = localStorage.getItem('memos');
     return stored ? JSON.parse(stored) : sampleMemos;
   });
+
+  // 로그인 모달
+  const [showLogin, setShowLogin] = useState<boolean>(false);
+  
+  // OAuth 로그인
+  const [isLogin, setIsLogin] = useState(false);
+  const [, setUserInfo] = useState<{
+    email: string;
+    name: string;
+    picture?: string; } 
+    | null> (null);
+
 
   // 값 변경될 때마다, 로컬스토리지 갱신
   useEffect(() => {
@@ -58,7 +71,14 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header setShowLogin={setShowLogin}/>
+      <LoginModal 
+        isLogin={isLogin}
+        setIsLogin={setIsLogin}
+        setUserInfo={setUserInfo}
+        showLogin={showLogin}
+        setShowLogin={setShowLogin}
+      />
       <Container className="app-container mt-5">
         <FolderMenu
           selectedId={selectedFolderId}
