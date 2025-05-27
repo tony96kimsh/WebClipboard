@@ -7,6 +7,7 @@ import { Container } from 'react-bootstrap';
 import { sampleFolders, sampleMemos } from './data/Sample';
 import type { Memo } from './data/Memo';
 import type { Folder } from './data/Folder';
+import Header from './layout/Header';
 
 function App() {
   // 스토리지에 값 없을 경우 샘플 데이터 출력
@@ -56,21 +57,24 @@ function App() {
   };
 
   return (
-    <Container className="app-container mt-3">
-      <FolderMenu
-        selectedId={selectedFolderId}
-        setSelectedId={setSelectedFolderId}
-        folders={folders}
-        setFolders={setFolders}
-      />
-      <InsertMemo onAddMemo={handleAddMemo} />
-      <MemoList
-        folderId={selectedFolderId}
-        memos={memos}
-        onEditMemo={handleEditMemo}
-        onDeleteMemo={handleDeleteMemo}
-      />
-    </Container>
+    <>
+      <Header />
+      <Container className="app-container mt-5">
+        <FolderMenu
+          selectedId={selectedFolderId}
+          setSelectedId={setSelectedFolderId}
+          folders={folders}
+          setFolders={setFolders}
+        />
+        <InsertMemo onAddMemo={handleAddMemo} />
+        <MemoList
+          folderId={selectedFolderId}
+          memos={memos}
+          onEditMemo={handleEditMemo}
+          onDeleteMemo={handleDeleteMemo}
+        />
+      </Container>
+    </>
   );
 }
 

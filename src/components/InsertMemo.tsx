@@ -16,10 +16,10 @@ const InsertMemo = ({ onAddMemo }: Props) => {
       </Button>
 
       <MemoModal
-        show={showModal}
+        show={showModal} // 토글
         onClose={() => setShowModal(false)}
         onSubmit={onAddMemo}
-        isEdit={false}
+        isEdit={false} // 신규 작성 false
       />
     </>
   );

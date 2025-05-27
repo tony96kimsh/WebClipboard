@@ -55,7 +55,7 @@ const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
               <Card.Title>{memo.title}</Card.Title>
               <Card.Text>{memo.content}</Card.Text>
 
-              {/* ✅ 우측 하단 아이콘 */}
+              {/* 우측 하단 아이콘 */}
               <div
                 className="memo-actions"
                 onClick={(e) => e.stopPropagation()} // 복사 이벤트 방지
@@ -87,7 +87,7 @@ const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
       </ToastContainer>
 
       <MemoModal
-        show={!!editingMemo}
+        show={!!editingMemo} // 명확한 boolean형
         onClose={() => setEditingMemo(null)}
         onSubmit={(title, content) => {
           if (editingMemo) {
