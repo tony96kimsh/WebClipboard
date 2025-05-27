@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import './App.css';
 import FolderMenu from './components/FolderMenu';
 import InsertMemo from './components/InsertMemo';
@@ -9,8 +10,28 @@ import type { Memo } from './data/Memo';
 import type { Folder } from './data/Folder';
 import Header from './layout/Header';
 import LoginModal from './login/LoginModal';
+import { supabase } from './lib/superbaseClient';
+
 
 function App() {
+  
+  // superbase 연결확인
+  useEffect(() => {
+  const testConnection = async () => {
+    const { data, error } = await supabase.from('folders').select().limit(1);
+    
+    if (error) {
+      console.error("❌ Supabase 연결 실패:", error.message);
+    } else {
+      console.log("✅ Supabase 연결 성공!", data);
+    }
+  };
+
+    testConnection();
+  }, []);
+
+
+
   // 스토리지에 값 없을 경우 샘플 데이터 출력
   const [folders, setFolders] = useState<Folder[]>(() => {
     const stored = localStorage.getItem('folders');
@@ -28,13 +49,45 @@ function App() {
   const [showLogin, setShowLogin] = useState<boolean>(false);
   
   // OAuth 로그인
-  const [isLogin, setIsLogin] = useState(false);
-  const [, setUserInfo] = useState<{
+  const [isLogin, setIsLogin] = useState(() => {
+    return Cookies.get('isLogin') === 'true';
+  });
+  const [userInfo, setUserInfo] = useState<{
     email: string;
     name: string;
-    picture?: string; } 
-    | null> (null);
+    picture?: string;
+  } | null>(() => {
+    const cookieData = Cookies.get('userInfo');
+    return cookieData ? JSON.parse(cookieData) : null;
+  });
 
+  // 계정 정보 쿠기 동기화(리렌더 시)
+  useEffect(() => {
+    const savedLogin = Cookies.get('isLogin') === 'true';
+    const savedUser = Cookies.get('userInfo');
+
+    if (savedLogin && savedUser) {
+      setIsLogin(true);
+      setUserInfo(JSON.parse(savedUser));
+    }
+  }, []);
+  
+  // 쿠키 업데이트
+  useEffect(() => {
+    Cookies.set('isLogin', String(isLogin), { expires: 7 });
+  }, [isLogin]);
+
+  useEffect(() => {
+    if (userInfo) {
+      Cookies.set('userInfo', JSON.stringify(userInfo), { expires: 7 });
+    } else {
+      Cookies.remove('userInfo');
+    }
+  }, [userInfo]);
+  
+  console.log(userInfo);
+  console.log(isLogin);
+  
 
   // 값 변경될 때마다, 로컬스토리지 갱신
   useEffect(() => {
@@ -71,7 +124,12 @@ function App() {
 
   return (
     <>
-      <Header setShowLogin={setShowLogin}/>
+      <Header setShowLogin={setShowLogin}
+        isLogin={isLogin}
+        setIsLogin={setIsLogin}
+        setUserInfo={setUserInfo}
+        userInfo={userInfo}
+      />
       <LoginModal 
         isLogin={isLogin}
         setIsLogin={setIsLogin}

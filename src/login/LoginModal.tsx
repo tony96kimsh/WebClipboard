@@ -25,7 +25,7 @@ const LoginModal = ({ setIsLogin, setUserInfo, showLogin, setShowLogin }: Props)
           onSuccess={(credentialResponse) => {
             const token = credentialResponse.credential;
             const decoded: any = jwtDecode(token!);
-
+            
             setUserInfo({
               email: decoded.email,
               name: decoded.name,
@@ -33,6 +33,7 @@ const LoginModal = ({ setIsLogin, setUserInfo, showLogin, setShowLogin }: Props)
             });
             setIsLogin(true);
             setShowLogin(false); // 로그인 성공 시 모달 닫기
+            console.log(decoded);
           }}
           onError={() => {
             setUserInfo(null);
