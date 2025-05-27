@@ -4,7 +4,7 @@ import './App.css';
 import FolderMenu from './components/FolderMenu';
 import InsertMemo from './components/InsertMemo';
 import MemoList from './components/MemoList';
-import { Container  } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { sampleFolders, sampleMemos } from './data/Sample';
 import type { Memo } from './data/Memo';
 import type { Folder } from './data/Folder';
@@ -12,67 +12,27 @@ import Header from './layout/Header';
 import LoginModal from './login/LoginModal';
 import { supabase } from './lib/superbaseClient';
 
-
 function App() {
-  
-  // superbase 연결확인
-  useEffect(() => {
-  const testConnection = async () => {
-    const { data, error } = await supabase.from('folders').select().limit(1);
-    
-    if (error) {
-      console.error("❌ Supabase 연결 실패:", error.message);
-    } else {
-      console.log("✅ Supabase 연결 성공!", data);
-    }
-  };
-
-    testConnection();
-  }, []);
-
-
-
-  // 스토리지에 값 없을 경우 샘플 데이터 출력
-  const [folders, setFolders] = useState<Folder[]>(() => {
-    const stored = localStorage.getItem('folders');
-    return stored ? JSON.parse(stored) : sampleFolders;
-  });
-
-  const [selectedFolderId, setSelectedFolderId] = useState(folders[0].id);
-
-  const [memos, setMemos] = useState<Memo[]>(() => {
-    const stored = localStorage.getItem('memos');
-    return stored ? JSON.parse(stored) : sampleMemos;
-  });
-
-  // 로그인 모달
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string>('');
+  const [memos, setMemos] = useState<Memo[]>([]);
   const [showLogin, setShowLogin] = useState<boolean>(false);
-  
-  // OAuth 로그인
-  const [isLogin, setIsLogin] = useState(() => {
-    return Cookies.get('isLogin') === 'true';
-  });
-  const [userInfo, setUserInfo] = useState<{
-    email: string;
-    name: string;
-    picture?: string;
-  } | null>(() => {
+
+  const [isLogin, setIsLogin] = useState(() => Cookies.get('isLogin') === 'true');
+  const [userInfo, setUserInfo] = useState<{ email: string; name: string; picture?: string } | null>(() => {
     const cookieData = Cookies.get('userInfo');
     return cookieData ? JSON.parse(cookieData) : null;
   });
 
-  // 계정 정보 쿠기 동기화(리렌더 시)
   useEffect(() => {
     const savedLogin = Cookies.get('isLogin') === 'true';
     const savedUser = Cookies.get('userInfo');
-
     if (savedLogin && savedUser) {
       setIsLogin(true);
       setUserInfo(JSON.parse(savedUser));
     }
   }, []);
-  
-  // 쿠키 업데이트
+
   useEffect(() => {
     Cookies.set('isLogin', String(isLogin), { expires: 7 });
   }, [isLogin]);
@@ -84,18 +44,113 @@ function App() {
       Cookies.remove('userInfo');
     }
   }, [userInfo]);
-  
-  console.log(userInfo);
-  console.log(isLogin);
-  
 
-  // 값 변경될 때마다, 로컬스토리지 갱신
   useEffect(() => {
-    localStorage.setItem('folders', JSON.stringify(folders));
+    const fetchData = async () => {
+      const userEmail = userInfo?.email;
+
+      if (isLogin && userEmail) {
+        const { data: foldersData } = await supabase
+          .from('folders')
+          .select('*')
+          .eq('user_email', userEmail);
+
+        const { data: memosData } = await supabase
+          .from('memos')
+          .select('*')
+          .eq('user_email', userEmail);
+
+        if (!foldersData || foldersData.length === 0) {
+          const foldersWithUser = sampleFolders.map((f) => ({
+            id: f.id,
+            name: f.name,
+            created_at: f.createdAt,
+            user_email: userEmail,
+          }));
+          await supabase.from('folders').upsert(foldersWithUser);
+          setFolders(sampleFolders);
+          setSelectedFolderId(sampleFolders[0].id);
+        } else {
+          setFolders(foldersData.map(f => ({ ...f, createdAt: new Date(f.created_at) })));
+          setSelectedFolderId(foldersData[0].id);
+        }
+
+        if (!memosData || memosData.length === 0) {
+          const memosWithUser = sampleMemos.map((m) => ({
+            id: m.id,
+            folderId: m.folderId,
+            title: m.title,
+            content: m.content,
+            created_at: m.createdAt,
+            updated_at: m.updatedAt,
+            user_email: userEmail,
+          }));
+          await supabase.from('memos').upsert(memosWithUser);
+          setMemos(sampleMemos);
+        } else {
+          setMemos(memosData.map(m => ({
+            ...m,
+            createdAt: new Date(m.created_at),
+            updatedAt: new Date(m.updated_at),
+          })));
+        }
+      } else {
+        const storedFolders = localStorage.getItem('folders');
+        const storedMemos = localStorage.getItem('memos');
+
+        const loadedFolders = storedFolders ? JSON.parse(storedFolders) : sampleFolders;
+        const loadedMemos = storedMemos ? JSON.parse(storedMemos) : sampleMemos;
+
+        setFolders(loadedFolders);
+        setMemos(loadedMemos);
+        setSelectedFolderId(loadedFolders[0]?.id || '');
+      }
+    };
+
+    fetchData();
+  }, [isLogin, userInfo]);
+
+  useEffect(() => {
+    if (folders.length === 0) return;
+    const userEmail = userInfo?.email;
+    if (isLogin && userEmail) {
+      folders.forEach(async (folder) => {
+        const { error } = await supabase.from('folders').upsert({
+          id: folder.id,
+          name: folder.name,
+          created_at: folder.createdAt,
+          user_email: userEmail,
+        });
+        if (error) {
+          console.error("❌ FOLDER 저장 실패:", folder, error.message);
+        }
+      });
+    } else {
+      localStorage.setItem('folders', JSON.stringify(folders));
+    }
   }, [folders]);
 
   useEffect(() => {
-    localStorage.setItem('memos', JSON.stringify(memos));
+    if (memos.length === 0) return;
+    const userEmail = userInfo?.email;
+    if (isLogin && userEmail) {
+      memos.forEach(async (memo) => {
+        const { error } = await supabase.from('memos').upsert({
+          id: memo.id,
+          folderId: memo.folderId,
+          title: memo.title,
+          content: memo.content,
+          created_at: memo.createdAt,
+          updated_at: memo.updatedAt,
+          user_email: userEmail,
+        });
+        if (error) {
+          console.error("❌ MEMO 저장 실패:", memo, error.message);
+        }
+      });
+    } else {
+      localStorage.setItem('memos', JSON.stringify(memos));
+    }
   }, [memos]);
 
   const addMemo = (title: string, content: string) => {
@@ -112,9 +167,7 @@ function App() {
 
   const editMemo = (editedMemo: Memo) => {
     setMemos((prev) =>
-      prev.map((memo) =>
-        memo.id === editedMemo.id ? editedMemo : memo
-      )
+      prev.map((memo) => (memo.id === editedMemo.id ? editedMemo : memo))
     );
   };
 
@@ -124,13 +177,14 @@ function App() {
 
   return (
     <>
-      <Header setShowLogin={setShowLogin}
+      <Header
+        setShowLogin={setShowLogin}
         isLogin={isLogin}
         setIsLogin={setIsLogin}
         setUserInfo={setUserInfo}
         userInfo={userInfo}
       />
-      <LoginModal 
+      <LoginModal
         isLogin={isLogin}
         setIsLogin={setIsLogin}
         setUserInfo={setUserInfo}

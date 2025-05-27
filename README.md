@@ -52,3 +52,17 @@ TypeScript, React
 ```
 ### 코드 구조
 
+### DB 구조 (superbase)
+folders
+- id: UUID (PK)
+- name: text
+- created_at timestampz
+- user_email: text (유저 구분용)
+memos
+- id: UUID (PK)
+- folderId: UUID (FK)
+- title: text
+- content: text
+- created_at: timestampz
+- updated_at: timestampz
+- user_email: text (유저 구분용)
