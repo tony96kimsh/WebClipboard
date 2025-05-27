@@ -4,7 +4,7 @@ import { Modal, Form, Button } from "react-bootstrap";
 interface Props {
   show: boolean;
   onClose: () => void;
-  onSubmit: (title: string, content: string) => void;
+  addMemo: (title: string, content: string) => void;
   isEdit?: boolean;
   defaultTitle?: string;
   defaultContent?: string;
@@ -13,7 +13,7 @@ interface Props {
 const MemoModal = ({
   show,
   onClose,
-  onSubmit,
+  addMemo,
   isEdit = false,
   defaultTitle = "",
   defaultContent = "",
@@ -30,8 +30,12 @@ const MemoModal = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
-    onSubmit(title, content);
+    if (!title.trim() || !content.trim()) {
+      alert("값을 입력하세요");
+      return;
+    }
+    addMemo(title, content);
+    // 값 초기화
     setTitle('');
     setContent('');
     onClose();

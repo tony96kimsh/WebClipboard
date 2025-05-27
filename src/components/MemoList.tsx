@@ -1,19 +1,19 @@
-import { Button, Card, Toast, ToastContainer } from 'react-bootstrap';
-import { PencilSquare, Trash } from 'react-bootstrap-icons';
-import type { Memo } from '../data/Memo';
-import { useState } from 'react';
-import './MemoList.css';
-import MemoModal from './MemoModal';
-import { Modal } from 'react-bootstrap';
+import { Button, Card, Toast, ToastContainer } from "react-bootstrap";
+import { PencilSquare, Trash } from "react-bootstrap-icons";
+import type { Memo } from "../data/Memo";
+import { useState } from "react";
+import "./MemoList.css";
+import MemoModal from "./MemoModal";
+import { Modal } from "react-bootstrap";
 
 interface Props {
   folderId: string;
   memos: Memo[];
-  onEditMemo?: (memo: Memo) => void;
-  onDeleteMemo?: (id: string) => void;
+  editMemo?: (memo: Memo) => void;
+  deleteMemo?: (id: string) => void;
 }
 
-const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
+const MemoList = ({ folderId, memos, editMemo, deleteMemo }: Props) => {
   const [showToast, setShowToast] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [deletingMemo, setDeletingMemo] = useState<Memo | null>(null);
@@ -33,7 +33,7 @@ const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
 
   const handleDeleteConfirm = () => {
     if (deletingMemo) {
-      onDeleteMemo?.(deletingMemo.id);
+      deleteMemo?.(deletingMemo.id);
       setDeletingMemo(null);
     }
   };
@@ -89,9 +89,9 @@ const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
       <MemoModal
         show={!!editingMemo} // 명확한 boolean형
         onClose={() => setEditingMemo(null)}
-        onSubmit={(title, content) => {
+        addMemo={(title, content) => {
           if (editingMemo) {
-            onEditMemo?.({
+            editMemo?.({
               ...editingMemo,
               title,
               content,
@@ -105,13 +105,15 @@ const MemoList = ({ folderId, memos, onEditMemo, onDeleteMemo }: Props) => {
         defaultContent={editingMemo?.content}
       />
 
-      <Modal show={!!deletingMemo} onHide={() => setDeletingMemo(null)} centered>
+      <Modal
+        show={!!deletingMemo}
+        onHide={() => setDeletingMemo(null)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>메모 삭제</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          정말 이 메모를 삭제하시겠습니까?
-        </Modal.Body>
+        <Modal.Body>정말 이 메모를 삭제하시겠습니까?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setDeletingMemo(null)}>
             취소

@@ -32,7 +32,7 @@ function App() {
     localStorage.setItem('memos', JSON.stringify(memos));
   }, [memos]);
 
-  const handleAddMemo = (title: string, content: string) => {
+  const addMemo = (title: string, content: string) => {
     const newMemo: Memo = {
       id: crypto.randomUUID(),
       folderId: selectedFolderId,
@@ -44,7 +44,7 @@ function App() {
     setMemos([newMemo, ...memos]);
   };
 
-  const handleEditMemo = (editedMemo: Memo) => {
+  const editMemo = (editedMemo: Memo) => {
     setMemos((prev) =>
       prev.map((memo) =>
         memo.id === editedMemo.id ? editedMemo : memo
@@ -52,7 +52,7 @@ function App() {
     );
   };
 
-  const handleDeleteMemo = (id: string) => {
+  const deleteMemo = (id: string) => {
     setMemos((prev) => prev.filter((memo) => memo.id !== id));
   };
 
@@ -66,12 +66,12 @@ function App() {
           folders={folders}
           setFolders={setFolders}
         />
-        <InsertMemo onAddMemo={handleAddMemo} />
+        <InsertMemo addMemo={addMemo} />
         <MemoList
           folderId={selectedFolderId}
           memos={memos}
-          onEditMemo={handleEditMemo}
-          onDeleteMemo={handleDeleteMemo}
+          editMemo={editMemo}
+          deleteMemo={deleteMemo}
         />
       </Container>
     </>
