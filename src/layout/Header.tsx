@@ -34,7 +34,7 @@ const Header = ({ setShowLogin, isLogin, setIsLogin, setUserInfo, userInfo }: Pr
     <Navbar className="border-bottom" style={{ backgroundColor: "#f8f9fa" }}>
       <Container>
         <Navbar.Brand>
-          <h1>🖇️ Web Clipboard</h1>
+          <h1>📎 Web Clipboard</h1>
         </Navbar.Brand>
         <Nav.Link className="d-flex align-items-center" onClick={handleClick}>
           {isLogin ? (
