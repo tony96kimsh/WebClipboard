@@ -77,6 +77,8 @@ QA 업무 중 이슈 보고서를 복사해 사용하는 일이 잦았고, 이�
 
 #### 로그인 유무에 따른 데이터 읽기와 저장 동작
 
+로그인 정보가 있으면 클라우드 DB에 저장하고 없을 경우 로컬 스토리지를 사용합니다.
+
 ```mermaid
 flowchart TD
   A[Component Mount or Add Memo] --> B{Is Logged In?}
@@ -156,7 +158,8 @@ const deleteMemo = (id: string) => {
 };
 ```
 
-구글 Oauth 연결 코드
+#### 구글 Oauth 연결 코드
+
 ``` tsx
 <GoogleLogin
   onSuccess={(credentialResponse) => {
@@ -178,19 +181,45 @@ const deleteMemo = (id: string) => {
 />
 ```
 
-### DB 구조 (superbase)
-folders
-- id: UUID (PK)
-- name: text
-- created_at timestampz
-- user_email: text (유저 구분용)
-memos
-- id: UUID (PK)
-- folderId: UUID (FK)
-- title: text
-- content: text
-- created_at: timestampz
-- updated_at: timestampz
-- user_email: text (유저 구분용)
+### 🗄️ 데이터베이스 구조 (Supabase)
 
+#### 📁 folders 테이블
+| Column       | Type       | 설명                         |
+|--------------|------------|------------------------------|
+| `id`         | UUID (PK)  | 폴더의 고유 ID               |
+| `name`       | text       | 폴더 이름                    |
+| `created_at` | timestampz | 폴더 생성 시각               |
+| `user_email` | text       | 사용자 이메일 (구분용)       |
 
+#### 📝 memos 테이블
+| Column        | Type       | 설명                          |
+|---------------|------------|-------------------------------|
+| `id`          | UUID (PK)  | 메모의 고유 ID                |
+| `folderId`    | UUID (FK)  | 연결된 폴더의 ID              |
+| `title`       | text       | 메모 제목                     |
+| `content`     | text       | 메모 내용                     |
+| `created_at`  | timestampz | 메모 생성 시각                |
+| `updated_at`  | timestampz | 메모 수정 시각                |
+| `user_email`  | text       | 사용자 이메일 (구분용)        |
+
+#### 🔗 Table Relationship
+
+```mermaid
+erDiagram
+  folders ||--o{ memos : contains
+  folders {
+    UUID id PK
+    text name
+    timestampz created_at
+    text user_email
+  }
+  memos {
+    UUID id PK
+    UUID folderId FK
+    text title
+    text content
+    timestampz created_at
+    timestampz updated_at
+    text user_email
+  }
+```
