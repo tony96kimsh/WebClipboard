@@ -54,9 +54,8 @@ QA 업무 중 이슈 보고서를 복사해 사용하는 일이 잦았고, 이�
 
 ---
 
-### 폴더 구조
+### 📁 폴더 구조
 ```
-/src
 /src
 ├── App.css                # 전체 앱 스타일 정의
 ├── App.tsx                # 앱의 루트 컴포넌트, 전반적인 상태 관리 및 렌더링 처리
@@ -74,7 +73,29 @@ QA 업무 중 이슈 보고서를 복사해 사용하는 일이 잦았고, 이�
 │   ├── Memo.ts            # 메모 객체 타입 정의
 │   └── Sample.ts          # 초기 렌더링을 위한 샘플 데이터들
 ```
-### 코드 구조
+### 🪜 코드 구조
+
+#### 로그인 유무에 따른 데이터 읽기와 저장 동작
+
+```mermaid
+flowchart TD
+  A[Component Mount or Add Memo] --> B{Is Logged In?}
+  B -->|Yes| C{Has Email?}
+  C -->|Yes| D{Action Type}
+  D -->|Initial Load| E[Fetch folders from Supabase by email]
+  E --> F{Data exists?}
+  F -->|Yes| G[Set folders from Supabase]
+  F -->|No| H[Set folders as sample data]
+
+  D -->|Add Memo| I[Insert new memo to Supabase with email]
+
+  C -->|No| J[Fallback to localStorage]
+  B -->|No| J
+
+  J --> K{Action Type}
+  K -->|Initial Load| L[Load folders from localStorage or use sample data]
+  K -->|Add Memo| M[Save memo to localStorage]
+```
 
 #### 메모 CRUD 코드
 
@@ -155,53 +176,6 @@ const deleteMemo = (id: string) => {
     alert("❌ 로그인 실패");
   }}
 />
-```
-
-#### 로그인 상태에 따른 DB 사용
-초기 렌더
-``` tsx
-useEffect(() => {
-  const fetchInitialFolders = async () => {
-    if (isLogin && userInfo?.email) {
-      const { data, error } = await supabase
-        .from("folders")
-        .select("*")
-        .eq("email", userInfo.email);
-
-      if (data && data.length > 0) {
-        setFolders(data);
-      } else {
-        setFolders(sampleFolders);
-      }
-    } else {
-      const stored = localStorage.getItem("folders");
-      setFolders(stored ? JSON.parse(stored) : sampleFolders);
-    }
-  };
-
-  fetchInitialFolders();
-}, [isLogin, userInfo]);
-```
-메모 추가
-``` tsx
-const addMemo = async (title: string, content: string) => {
-  const newMemo: Memo = {
-    id: crypto.randomUUID(),
-    folderId: selectedFolderId,
-    title,
-    content,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  setMemos([newMemo, ...memos]);
-
-  if (isLogin && userInfo?.email) {
-    await supabase.from("memos").insert([{ ...newMemo, email: userInfo.email }]);
-  } else {
-    localStorage.setItem("memos", JSON.stringify([newMemo, ...memos]));
-  }
-};
 ```
 
 ### DB 구조 (superbase)
