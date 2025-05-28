@@ -3,7 +3,7 @@
 
 홈화면 | 로그인 화면 | 메모 추가
 --|--|--
-![홈화면](./public/image2.png) | ![로그인](image.png) | ![메모추가](./public/image.png)
+![홈화면](./public/image2.png) | ![로그인](./public/image3.png) | ![메모추가](./public/image.png)
 
 <br>
 
@@ -184,23 +184,23 @@ const deleteMemo = (id: string) => {
 ### 🗄️ 데이터베이스 구조 (Supabase)
 
 #### 📁 folders 테이블
-| Column       | Type       | 설명                         |
+| Column       | Type       | 설명                          |
 |--------------|------------|------------------------------|
-| `id`         | UUID (PK)  | 폴더의 고유 ID               |
-| `name`       | text       | 폴더 이름                    |
-| `created_at` | timestampz | 폴더 생성 시각               |
-| `user_email` | text       | 사용자 이메일 (구분용)       |
+| `id`         | UUID (PK)  | 폴더의 고유 ID                  |
+| `name`       | text       | 폴더 이름                      |
+| `created_at` | timestampz | 폴더 생성 시각                  |
+| `user_email` | text       | 사용자 이메일 (구분용)            |
 
 #### 📝 memos 테이블
-| Column        | Type       | 설명                          |
+| Column        | Type       | 설명                           |
 |---------------|------------|-------------------------------|
-| `id`          | UUID (PK)  | 메모의 고유 ID                |
-| `folderId`    | UUID (FK)  | 연결된 폴더의 ID              |
-| `title`       | text       | 메모 제목                     |
-| `content`     | text       | 메모 내용                     |
-| `created_at`  | timestampz | 메모 생성 시각                |
-| `updated_at`  | timestampz | 메모 수정 시각                |
-| `user_email`  | text       | 사용자 이메일 (구분용)        |
+| `id`          | UUID (PK)  | 메모의 고유 ID                   |
+| `folderId`    | UUID (FK)  | 연결된 폴더의 ID                 |
+| `title`       | text       | 메모 제목                       |
+| `content`     | text       | 메모 내용                       |
+| `created_at`  | timestampz | 메모 생성 시각                   |
+| `updated_at`  | timestampz | 메모 수정 시각                   |
+| `user_email`  | text       | 사용자 이메일 (구분용)             |
 
 #### 🔗 Table Relationship
 
