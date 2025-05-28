@@ -11,6 +11,7 @@ import type { Folder } from './data/Folder';
 import Header from './layout/Header';
 import LoginModal from './login/LoginModal';
 import { supabase } from './lib/superbaseClient';
+import Footer from './layout/Footer';
 
 function App() {
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -206,6 +207,7 @@ function App() {
           deleteMemo={deleteMemo}
         />
       </Container>
+      <Footer />
     </>
   );
 }
