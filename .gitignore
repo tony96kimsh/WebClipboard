@@ -1,4 +1,20 @@
-# Logs
+# --------------------------
+# ✅ 기본 빌드/의존성 관련
+# --------------------------
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# --------------------------
+# ✅ 환경 변수 파일
+# --------------------------
+.env
+.env.*.local
+
+# --------------------------
+# ✅ 로그 및 디버그 파일
+# --------------------------
 logs
 *.log
 npm-debug.log*
@@ -7,18 +23,32 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# --------------------------
+# ✅ OS / 에디터 파일
+# --------------------------
+.DS_Store
+Thumbs.db
 
-# Editor directories and files
+# vscode 설정 공유 예외 (extensions.json 등)
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# --------------------------
+# ✅ 테스트 및 커버리지
+# --------------------------
+coverage/
+*.tgz
+*.tmp
+*.bak
+
+# --------------------------
+# ✅ 기타 (캐시 등)
+# --------------------------
+*.cache
